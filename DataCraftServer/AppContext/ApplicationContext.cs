@@ -5,7 +5,6 @@ namespace DataCraftServer.AppContext
 {
     public class ApplicationContext : DbContext
     {
-        //public ApplicationContext():base(){}
         public DbSet<Location> Locations { get; set; }
         public DbSet<TaskType> TaskTypes { get; set; }
         public DbSet<Status> Statuses { get; set; }
@@ -16,14 +15,15 @@ namespace DataCraftServer.AppContext
         public DbSet<WorkGroup> Workgroups { get; set; }
         public DbSet<Resolution> Resolutions { get; set; }
 
-        public ApplicationContext()
+        public ApplicationContext(DbContextOptions<ApplicationContext> options = null) : base(options)
         {
             //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+
+        public ApplicationContext()
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=DataCraft;Username=postgres;Password=postgres");
+            
         }
     }
 }
