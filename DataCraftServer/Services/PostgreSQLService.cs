@@ -7,36 +7,9 @@ using Task = System.Threading.Tasks.Task;
 
 namespace DataCraftServer.Services
 {
-    public class PostgreSQLService
+    public class PostgreSQLService : IPostgreSQLService
     {
-        private string GetColumnType(dynamic type, string doublePresicion = "2")
-        {
-            switch (type)
-            {
-                case "String":
-                    return "TEXT";
-                case "Lookup":
-                    return "UUID";
-                case "Int32":
-                    return "INTEGER";
-                case "Decimal":
-                    return $"NUMERIC(18,{doublePresicion})";
-                case "DateTime":
-                    return "TIMESTAMP";
-                case "Guid":
-                    return "UUID";
-                case "Boolean":
-                    return "BOOLEAN";
-                case "Date":
-                    return "DATE";
-                case "Time":
-                    return "TIME";
-                default:
-                    return "TEXT";
-            }
-        }
-
-        private string DetermineDataType(string value)
+        public string DetermineDataType(string value)
         {
             if (Guid.TryParse(value, out var guidResult))
                 return "UUID";
@@ -60,14 +33,15 @@ namespace DataCraftServer.Services
 
             foreach (var header in csvData.Keys)
             {
-                // Выбор типа данных для колонки. Здесь используется VARCHAR(255) как пример.
-                createTableSql += $", {header} VARCHAR(255)";
+                queryBuilder.Append($"\"{header}\" {DetermineDataType(csvData[header].First(x => !string.IsNullOrEmpty(x)))}, ");
             }
 
+            queryBuilder.Remove(queryBuilder.Length - 2, 2);
+            queryBuilder.Append(");");
+
             using (IDbConnection db = new NpgsqlConnection(DbConnection.ConnectionString))
-            {//\"{EntityName}\"
+            {
                 var usersDb = await db.ExecuteAsync(queryBuilder.ToString());
-      
             }
         }
     }

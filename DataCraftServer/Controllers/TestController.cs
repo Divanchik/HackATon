@@ -13,6 +13,12 @@ namespace DataCraftServer.Controllers
     [ApiController]
     public class TestController : Controller
     {
+        private readonly IPostgreSQLService _postgreSQLService;
+        public TestController(IPostgreSQLService postgreSQLService)
+        {
+            _postgreSQLService = postgreSQLService;
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAboba()
         {
@@ -43,7 +49,7 @@ namespace DataCraftServer.Controllers
 
                     var csvService = new CSVService();
                     data = csvService.ReadCsvColumns(stream);
-
+                    await _postgreSQLService.CreateTableWithColumnsFromCsv(file.FileName.Replace(".csv", ""), data);
                 }
             }
             
