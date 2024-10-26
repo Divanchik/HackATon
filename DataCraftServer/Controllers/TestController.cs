@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using DataCraftServer.AppContext;
 using DataCraftServer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.Data;
@@ -27,17 +26,10 @@ namespace DataCraftServer.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostAboba([FromForm] IFormFile file)
+        public IActionResult PostAboba(List<IFormFile> files)
         {
-            Console.WriteLine(Request.ContentType);
-            Console.WriteLine(Request.Form.Files.ToArray().Length);
-            var file0 = Request.Form.Files[0];
-            Console.WriteLine(file0.FileName);
-            var respObj = Json(new DataCraftServer.Models.Tag()
-            {
-                Id = 1, Value = "FRONT"
-            });
-            return Ok(respObj);
+            long size = files.Sum(f => f.Length);
+            return Ok(new { count = files.Count, size });
         }
     }
 }
