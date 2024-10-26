@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using DataCraftServer.AppContext;
 using DataCraftServer.Models;
+using DataCraftServer.Services;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.Data;
@@ -26,10 +28,30 @@ namespace DataCraftServer.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostAboba(List<IFormFile> files)
+        public async Task<IActionResult> PostAboba(List<IFormFile> files)
         {
-            long size = files.Sum(f => f.Length);
-            return Ok(new { count = files.Count, size });
+            if (files == null || files.Count == 0)
+                return BadRequest("Файл не загружен.");
+
+            foreach (var file in files)
+            {
+                if (file.ContentType == "text/csv")
+                {
+                    using var stream = file.OpenReadStream();
+
+                    var csvService = new CSVService();
+                    var data = await csvService.ParseCsvFile(stream);
+
+                }
+            }
+            
+
+            
+
+            // Сохранение данных в базу
+            // SaveToDatabase(data);
+
+            return Ok("Файл успешно обработан и данные сохранены.");
         }
     }
 }

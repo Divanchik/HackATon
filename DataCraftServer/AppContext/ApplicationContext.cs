@@ -17,8 +17,8 @@ namespace DataCraftServer.AppContext
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options = null) : base(options)
         {
-            //Database.EnsureDeleted();
-            //Database.EnsureCreated();
+            Database.EnsureDeleted();
+            Database.EnsureCreated();
         }
 
         public ApplicationContext()
