@@ -1,0 +1,33 @@
+:root {
+  --lighter-green: #c7f9cc;
+  --light-green: #80ed99;
+  --green: #57cc99;
+  --grey: #38a3a5;
+  --dark: #22577a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#root {
+  min-height: 100%;
+}
+
+main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  width: 1600px;
+}
