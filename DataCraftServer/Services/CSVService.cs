@@ -13,6 +13,8 @@ namespace DataCraftServer.Services
         }
         private object DetermineDataType(string value)
         {
+            if (Guid.TryParse(value, out var guidResult))
+                return guidResult;
             if (int.TryParse(value, out var intResult))
                 return intResult;
             if (double.TryParse(value, out var doubleResult))
