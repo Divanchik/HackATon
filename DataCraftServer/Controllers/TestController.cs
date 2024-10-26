@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Dapper;
+using DataCraftServer.AppContext;
+using DataCraftServer.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing.Constraints;
+using Npgsql;
+using System.Data;
 
 namespace DataCraftServer.Controllers
 {
@@ -9,10 +13,17 @@ namespace DataCraftServer.Controllers
     public class TestController : Controller
     {
         [HttpGet]
-        public IActionResult GetAboba()
+        public async Task<IActionResult> GetAboba()
         {
-            var dickPick = "dickPick0";
-            return Ok(dickPick);
+            var users = new List<User>();
+            
+            using (IDbConnection db = new NpgsqlConnection(DbConnection.ConnectionString))
+            {//\"{EntityName}\"
+                var usersDb =  await db.QueryAsync<User>("Select * from \"Users\"");
+                users = usersDb.ToList<User>();
+            }
+            
+            return Ok(users);
         }
 
         [HttpPost]

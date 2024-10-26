@@ -8,6 +8,8 @@ builder.Services.AddControllers();
 
 var connectionString = builder.Configuration["DbConnection"];
 
+DbConnection.ConnectionString = connectionString;
+
 builder.Services.AddDbContext<ApplicationContext>((sp, options) =>
     options.UseNpgsql(connectionString)
 );
