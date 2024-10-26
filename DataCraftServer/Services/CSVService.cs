@@ -64,9 +64,8 @@ namespace DataCraftServer.Services
             using var reader = new StreamReader(stream);
             var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                Delimiter = ";",
+                Delimiter = _separator.ToString(),
                 BadDataFound = null,
-                IgnoreQuotes = false,
                 HasHeaderRecord = true
             };
 
@@ -75,6 +74,13 @@ namespace DataCraftServer.Services
             // Читаем заголовки колонок
             csv.Read();
             csv.ReadHeader();
+
+            if (csv?.HeaderRecord?.Length == 1)
+            {
+                csv.Read();
+                csv.ReadHeader();
+            }
+
             foreach (var header in csv.HeaderRecord)
             {
                 result[header] = new List<string>();

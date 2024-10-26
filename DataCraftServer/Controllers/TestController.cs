@@ -33,6 +33,8 @@ namespace DataCraftServer.Controllers
             if (files == null || files.Count == 0)
                 return BadRequest("Файл не загружен.");
 
+            var data = new Dictionary<string, List<string>>();
+
             foreach (var file in files)
             {
                 if (file.ContentType == "text/csv")
@@ -40,18 +42,13 @@ namespace DataCraftServer.Controllers
                     using var stream = file.OpenReadStream();
 
                     var csvService = new CSVService();
-                    var data = await csvService.ParseCsvFile(stream);
+                    data = csvService.ReadCsvColumns(stream);
 
                 }
             }
             
 
-            
-
-            // Сохранение данных в базу
-            // SaveToDatabase(data);
-
-            return Ok("Файл успешно обработан и данные сохранены.");
+            return Ok(data.Take(2));
         }
     }
 }
