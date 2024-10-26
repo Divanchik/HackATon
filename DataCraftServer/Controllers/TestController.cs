@@ -16,7 +16,7 @@ namespace DataCraftServer.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostAboba()
+        public IActionResult PostAboba([FromForm] IFormFile file)
         {
             Console.WriteLine(Request.ContentType);
             Console.WriteLine(Request.Form.Files.ToArray().Length);
