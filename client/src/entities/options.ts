@@ -2,6 +2,7 @@ export enum SectionType {
   TEXT,
   TABLE,
   HISTOGRAM,
+  FREQUENCY_HISTOGRAM,
 }
 
 export type Section = {

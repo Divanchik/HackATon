@@ -31,7 +31,11 @@ class OptionStore {
       case SectionType.HISTOGRAM:
         this.sections.push({
           type: SectionType.HISTOGRAM,
-          content: {},
+          content: {
+            choisenTable: '',
+            nameCol: null,
+            valueCol: null,
+          },
           id,
         });
         break;
@@ -39,6 +43,10 @@ class OptionStore {
       default:
         break;
     }
+  }
+
+  removeSection(index: number) {
+    this.sections.splice(index, 1);
   }
 
   changeText(text: string, index: number) {
@@ -51,10 +59,26 @@ class OptionStore {
 
   changeChoisenTable(tableIndex: number, sectionIndex: number) {
     const section = this.sections[sectionIndex];
-    console.log(sectionIndex);
-    if (section.type === SectionType.TABLE) {
+    if (
+      section.type === SectionType.TABLE ||
+      section.type === SectionType.HISTOGRAM
+    ) {
       section.content.choisenTable = tableIndex;
       section.content.choisenCols = [];
+    }
+  }
+
+  changeNameCol(colIndex: unknown, sectionIndex: number) {
+    const section = this.sections[sectionIndex];
+    if (section.type === SectionType.HISTOGRAM) {
+      section.content.nameCol = colIndex;
+    }
+  }
+
+  changeValueCol(colIndex: unknown, sectionIndex: number) {
+    const section = this.sections[sectionIndex];
+    if (section.type === SectionType.HISTOGRAM) {
+      section.content.valueCol = colIndex;
     }
   }
 
@@ -62,11 +86,10 @@ class OptionStore {
     const section = this.sections[sectionIndex];
     if (section.type === SectionType.TABLE) {
       if (Array.isArray(colIndex)) {
-        section.content.choisenCols = colIndex;
+        section.content.choisenCols = colIndex.sort((a, b) => a - b);
       } else {
         section.content.choisenCols = [colIndex];
       }
-      //   section.content.choisenCols.push(colIndex);
     }
   }
 }

@@ -1,3 +1,4 @@
+import { Button, MenuItem, Stack } from '@mui/material';
 import axios from 'axios';
 import { FC, useState } from 'react';
 
@@ -50,30 +51,76 @@ const Import = () => {
               style={{
                 width: '100%',
                 height: '100%',
+                cursor: 'pointer',
               }}
+              accept=".csv"
               onChange={add}
               type="file"
             />
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'grey',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: 20,
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              Нажмите сюда или перенесите файлы
+            </div>
           </div>
           <h1>Выбранные файлы</h1>
           <hr />
           <div>
-            {selectedFiles.map((file, i) => (
-              <div key={Math.random()}>
-                <span>{file.name}</span>
-                <button
-                  onClick={() => {
-                    deleteFile(i);
+            <Stack
+              sx={{
+                width: 500,
+              }}
+            >
+              {selectedFiles.map((file, i) => (
+                <MenuItem
+                  sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
                   }}
-                  type="button"
+                  key={Math.random()}
                 >
-                  Удалить
-                </button>
-              </div>
-            ))}
+                  <span
+                    style={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {file.name}
+                  </span>
+                  <Button
+                    style={{
+                      marginLeft: 20,
+                    }}
+                    onClick={() => {
+                      deleteFile(i);
+                    }}
+                    type="button"
+                    variant="outlined"
+                    color="error"
+                  >
+                    Удалить
+                  </Button>
+                </MenuItem>
+              ))}
+            </Stack>
           </div>
           <hr />
-          <button>Отправить</button>
+          <Button variant="contained">Отправить</Button>
         </form>
       </div>
     </main>
