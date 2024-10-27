@@ -9,5 +9,7 @@ namespace DataCraftServer.Services
         Task CreateTableWithColumnsFromCsv(string tableName, Dictionary<string, List<string>> csvData);
         Task<FileData> GetPagedData(string tableName, List<string> columns, int offset = 0, int limit = 20);
         Task InsertTableData(string tableName, Dictionary<string, List<string>> csvData);
+        Task<IEnumerable<string>> getTables();
+        Task<IEnumerable<string>> getColumns(string tableName);
     }
 }
