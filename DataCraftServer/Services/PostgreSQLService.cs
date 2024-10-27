@@ -116,5 +116,23 @@ namespace DataCraftServer.Services
                 var result = await db.ExecuteAsync(sb.ToString());
             }   
         }
+
+        public async Task<IEnumerable<string>> getTables()
+        {
+            using (IDbConnection db = new NpgsqlConnection(DbConnection.ConnectionString))
+            {
+                var tableNames = await db.QueryAsync<string>("SELECT table_name from information_schema.tables WHERE table_schema = 'public';");
+                return tableNames;
+            }
+        }
+
+        public async Task<IEnumerable<string>> getColumns(string tableName)
+        {
+            using (IDbConnection db = new NpgsqlConnection(DbConnection.ConnectionString))
+            {
+                var tableNames = await db.QueryAsync<string>($"SELECT column_name from information_schema.columns WHERE table_schema = 'public' AND table_name = {tableName};");
+                return tableNames;
+            }
+        }
     }
 }
