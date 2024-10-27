@@ -29,5 +29,18 @@ namespace DataCraftServer.Controllers
         }
 
 
+        [HttpPost("getTablesData")]
+        public async Task<IActionResult> GetTableData(List<string> tableName)
+        {
+            List<EntityInfoItem> entityInfoList = await _appContext.EntityInfoItems.Where(x => tableName.Contains(x.FileName)).ToListAsync();
+
+            var datas = new List<FileData>();
+            foreach(var entityInfoItem in entityInfoList)
+            {
+                var data = await _postgreSQLService.GetPagedData(entityInfoItem.FileName, entityInfoItem.Columns, 0, 200);
+                datas.Add(data);
+            }
+            return Ok(datas);
+        }
     }
 }
