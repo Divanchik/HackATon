@@ -4,6 +4,7 @@ using DataCraftServer.Services;
 using DataCraftServer.AppContext;
 using DataCraftServer.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataCraftServer.Controllers
 {
@@ -20,13 +21,13 @@ namespace DataCraftServer.Controllers
             _appContext = appContext;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> getTables()
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllDataTable()
         {
-            Dictionary<string, List<string>> res;
-            var tables = await _postgreSQLService.getTables();
-            return Ok(tables);
+            List<EntityInfoItem> entityInfoList = await _appContext.EntityInfoItems.ToListAsync();
+            return Ok(entityInfoList);
         }
+
 
     }
 }
