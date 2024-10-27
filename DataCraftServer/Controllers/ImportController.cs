@@ -51,11 +51,16 @@ namespace DataCraftServer.Controllers
 
                     var filename = file.FileName.Replace(".csv", "");
 
-                    _appContext.EntityInfoItems.Add(new EntityInfoItem 
-                    { 
-                        FileName = filename,
-                        Columns = columns
-                    });
+                    var exist = _appContext.EntityInfoItems.FirstOrDefault(x => x.FileName == filename);
+
+                    if (exist == null)
+                    {
+                        _appContext.EntityInfoItems.Add(new EntityInfoItem
+                        {
+                            FileName = filename,
+                            Columns = columns
+                        });
+                    }
                     await _appContext.SaveChangesAsync();
 
                     await _postgreSQLService.CreateTableWithColumnsFromCsv(filename, data);
