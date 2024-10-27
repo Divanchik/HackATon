@@ -66,7 +66,7 @@ namespace DataCraftServer.Controllers
                     await _postgreSQLService.CreateTableWithColumnsFromCsv(filename, data);
                     await _postgreSQLService.InsertTableData(filename, data);
 
-                    var fileData = _postgreSQLService.GetPagedData(filename, columns, 0, 20);
+                    var fileData = await _postgreSQLService.GetPagedData(filename, columns, 0, 20);
 
                     return Ok(fileData);
                 }

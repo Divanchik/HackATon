@@ -1,15 +1,11 @@
 ﻿using Dapper;
 using DataCraftServer.AppContext;
 using DataCraftServer.Models;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using System.Data;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Xml.Linq;
 using Task = System.Threading.Tasks.Task;
-using Microsoft.IdentityModel.Tokens;
 
 namespace DataCraftServer.Services
 {
@@ -72,8 +68,8 @@ namespace DataCraftServer.Services
                         {
                             var rowDict = row as IDictionary<string, object>;
                             return rowDict != null && rowDict.ContainsKey(column)
-                                ? rowDict[column]
-                                : null; // Или другое значение
+                                ? rowDict[column]?.ToString()
+                                : null;
                         })
                     .ToList()
                     });
