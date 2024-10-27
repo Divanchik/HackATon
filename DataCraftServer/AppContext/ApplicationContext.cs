@@ -14,6 +14,7 @@ namespace DataCraftServer.AppContext
         public DbSet<Sprint> Sprints { get; set; }
         public DbSet<WorkGroup> Workgroups { get; set; }
         public DbSet<Resolution> Resolutions { get; set; }
+        public DbSet<EntityInfoItem> EntityInfoItems { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options = null) : base(options)
         {

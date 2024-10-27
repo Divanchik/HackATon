@@ -2,7 +2,6 @@
 using DataCraftServer.AppContext;
 using DataCraftServer.Models;
 using DataCraftServer.Services;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.Data;
@@ -14,9 +13,11 @@ namespace DataCraftServer.Controllers
     public class TestController : Controller
     {
         private readonly IPostgreSQLService _postgreSQLService;
-        public TestController(IPostgreSQLService postgreSQLService)
+        private readonly ApplicationContext _appContext;
+        public TestController(IPostgreSQLService postgreSQLService, ApplicationContext appContext)
         {
             _postgreSQLService = postgreSQLService;
+            _appContext = appContext;
         }
 
         [HttpGet]
@@ -49,11 +50,27 @@ namespace DataCraftServer.Controllers
 
                     var csvService = new CSVService();
                     data = csvService.ReadCsvColumns(stream);
-                    await _postgreSQLService.CreateTableWithColumnsFromCsv(file.FileName.Replace(".csv", ""), data);
+
+                    var columns = csvService.GetColumnsList(data);
+
+                    var filename = file.FileName.Replace(".csv", "");
+
+                    _appContext.EntityInfoItems.Add(new EntityInfoItem 
+                    { 
+                        FileName = filename,
+                        Columns = columns
+                    });
+                    await _appContext.SaveChangesAsync();
+
+                    await _postgreSQLService.CreateTableWithColumnsFromCsv(filename, data);
+
+                    var fileData = _postgreSQLService.GetPagedData(file.FileName, columns, 0, 20);
+
+                    return Ok(fileData);
                 }
             }
-            
 
+            
             return Ok(data.Take(2));
         }
     }

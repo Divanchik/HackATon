@@ -59,6 +59,16 @@ namespace DataCraftServer.Services
             return result;
         }
 
+        public List<string> GetColumnsList(Dictionary<string, List<string>> keyValues)
+        {
+            var result = new List<string>();
+            foreach (var header in keyValues.Keys)
+            {
+                result.Add(header);
+            }
+            return result;
+        }
+
         public Dictionary<string, List<string>> ReadCsvColumns(Stream stream)
         {
             var result = new Dictionary<string, List<string>>();

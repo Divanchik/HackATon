@@ -1,5 +1,7 @@
 ﻿using Dapper;
 using DataCraftServer.AppContext;
+using DataCraftServer.Models;
+using Microsoft.AspNetCore.Http.Extensions;
 using Npgsql;
 using System.Data;
 using System.Text;
@@ -41,7 +43,42 @@ namespace DataCraftServer.Services
 
             using (IDbConnection db = new NpgsqlConnection(DbConnection.ConnectionString))
             {
-                var usersDb = await db.ExecuteAsync(queryBuilder.ToString());
+                var result = await db.ExecuteAsync(queryBuilder.ToString());
+            }
+        }
+
+        public async Task<FileData> GetPagedData(string tableName, List<string> columns, int offset, int limit)
+        {
+            string columnNames = string.Join(", ", columns.Select(col => $"\"{col}\""));
+
+            string sql = $"SELECT {columnNames} FROM \"{tableName}\" OFFSET {offset} LIMIT {limit}";
+
+            using (IDbConnection db = new NpgsqlConnection(DbConnection.ConnectionString))
+            {
+                var results = await db.QueryAsync(sql);
+                var columnDataList = new List<ColumnData>();
+
+                foreach (var column in columns)
+                {
+                    columnDataList.Add(new ColumnData
+                    {
+                        ColumnName = column,
+                        ColumnValues = results.Select(row =>
+                        {
+                            var rowDict = row as IDictionary<string, object>;
+                            return rowDict != null && rowDict.ContainsKey(column)
+                                ? rowDict[column]
+                                : null; // Или другое значение
+                        })
+                    .ToList()
+                    });
+                }
+
+                return new FileData
+                {
+                    FileName = tableName,
+                    Columns = columnDataList
+                };
             }
         }
     }
