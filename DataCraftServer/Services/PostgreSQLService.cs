@@ -2,10 +2,14 @@
 using DataCraftServer.AppContext;
 using DataCraftServer.Models;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Npgsql;
 using System.Data;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Xml.Linq;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DataCraftServer.Services
 {
@@ -81,6 +85,40 @@ namespace DataCraftServer.Services
                     Columns = columnDataList
                 };
             }
+        }
+
+        public async Task InsertTableData(string tableName, Dictionary<string, List<string>> csvData)
+        {
+           
+            var sb = new StringBuilder();
+            sb.Append($"INSERT INTO \"{tableName}\" VALUES(");
+
+            var entryCount = csvData[csvData.Keys.First()].Count;
+            for (int i = 0; i < entryCount; i++)
+            {
+                foreach (string col in csvData.Keys)
+                {
+                    var newVal = csvData[col][i].Trim();
+                    if (newVal.IsNullOrEmpty())
+                        sb.Append("NULL,");
+                    else if (DetermineDataType(newVal) == "TEXT")
+                        sb.Append($"\'{newVal}\',");
+                    else if (DetermineDataType(newVal) == "TIMESTAMP")
+                        sb.Append($"timestamp \'{newVal}\',");
+                    else
+                        sb.Append(newVal + ",");
+                }
+
+                sb.Remove(sb.Length - 1, 1);
+                sb.Append("),(");
+            }
+            sb.Remove(sb.Length - 2, 2);
+            sb.Append(";");
+            
+            using (IDbConnection db = new NpgsqlConnection(DbConnection.ConnectionString))
+            {
+                var result = await db.ExecuteAsync(sb.ToString());
+            }   
         }
     }
 }

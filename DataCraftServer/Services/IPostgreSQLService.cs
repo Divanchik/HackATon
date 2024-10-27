@@ -8,6 +8,6 @@ namespace DataCraftServer.Services
         string DetermineDataType(string value);
         Task CreateTableWithColumnsFromCsv(string tableName, Dictionary<string, List<string>> csvData);
         Task<FileData> GetPagedData(string tableName, List<string> columns, int offset, int limit);
-
+        Task InsertTableData(string tableName, Dictionary<string, List<string>> csvData);
     }
 }
