@@ -24,8 +24,6 @@
 
     public enum Condition
     {
-        AND,
-        OR,
         EQUAL,
         NOT_EQUAL
     }
