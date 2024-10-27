@@ -1,34 +1,57 @@
-﻿using DataCraftServer.AppContext;
-using DataCraftServer.Services;
+﻿using Dapper;
+using DataCraftServer.AppContext;
 using DataCraftServer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+using System.Data;
+using System.Text;
 
-namespace DataCraftServer.Controllers
+
+[Route("api/[controller]")]
+[ApiController]
+public class FilterController : Controller
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class FilterController : Controller
+    [HttpPost("getColumnByFilter")]
+    public async Task<FileData> GetFilteredData(Filter filter)
     {
-        private readonly IPostgreSQLService _postgreSQLService;
-        private readonly ApplicationContext _appContext;
+        var sqlBuilder = new StringBuilder($"SELECT \"{filter.LinkedColumnName}\" FROM \"{filter.LinkedFileName}\" WHERE ");
+        var parameters = new DynamicParameters();
+        var parameterName = filter.ConditionCustomValue;
 
-        public FilterController(IPostgreSQLService postgreSQLService, ApplicationContext appContext)
+        string conditionClause = filter.Condition switch
         {
-            _postgreSQLService = postgreSQLService;
-            _appContext = appContext;
+            Condition.EQUAL => $"\"{filter.LinkedColumnName}\" = \'{parameterName}\'",
+            Condition.NOT_EQUAL => $"\"{filter.LinkedColumnName}\" <> \'{parameterName}\'",
+        };
+
+        sqlBuilder.Append(conditionClause);
+
+        var columnDataList = new List<ColumnData>();
+
+        using (IDbConnection _dbConnection = new NpgsqlConnection(DbConnection.ConnectionString))
+        {
+            var result = await _dbConnection.QueryAsync(sqlBuilder.ToString());
+
+            columnDataList.Add(new ColumnData
+            {
+                ColumnName = filter.LinkedColumnName,
+                ColumnValues = result
+                    .Select(row => {
+                        var rowDict = row as IDictionary<string, object>;
+                        return rowDict != null && rowDict.ContainsKey(filter.LinkedColumnName)
+                            ? rowDict[filter.LinkedColumnName]?.ToString()
+                            : null;
+                    })
+                .ToList()
+            });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetFilters()
+        return new FileData
         {
-            return Ok("Filters page");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> PostFilters(FilterSettings conf)
-        {
-            return Ok(conf);
-        }
+            FileName = filter.LinkedFileName!,
+            Columns = columnDataList
+        };
     }
+
 }
+    
