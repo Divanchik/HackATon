@@ -21,6 +21,7 @@ namespace DataCraftServer.Services
                 return "BOOLEAN";
             if (DateTime.TryParse(value, out var dateResult))
                 return "TIMESTAMP";
+
             return "TEXT";
         }
 
