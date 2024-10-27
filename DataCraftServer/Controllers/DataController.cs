@@ -30,7 +30,7 @@ namespace DataCraftServer.Controllers
 
 
         [HttpPost("getTablesData")]
-        public async Task<IActionResult> GetTableData(List<string> tableName)
+        public async Task<IActionResult> GetTableData([FromBody] List<string> tableName)
         {
             List<EntityInfoItem> entityInfoList = await _appContext.EntityInfoItems.Where(x => tableName.Contains(x.FileName)).ToListAsync();
 

@@ -12,7 +12,7 @@ using System.Text;
 public class FilterController : Controller
 {
     [HttpPost("getColumnByFilter")]
-    public async Task<FileData> GetFilteredData(Filter filter)
+    public async Task<FileData> GetFilteredData([FromBody] Filter filter)
     {
         var sqlBuilder = new StringBuilder($"SELECT \"{filter.LinkedColumnName}\" FROM \"{filter.LinkedFileName}\" WHERE ");
         var parameters = new DynamicParameters();
